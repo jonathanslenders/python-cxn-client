@@ -1,9 +1,10 @@
 import requests
 from xml.dom.minidom import parseString
 
+# Docs: http://192.168.0.13:8050/7736537a-391e-43f3-8be9-720576796173/RecivaRadio/RecivaRadio.xml
+
 __all__ = (
     'Keys',
-    'AudioSource',
     'CXN',
 )
 
@@ -163,6 +164,31 @@ class CXN(object):
             </s:Envelope>""".format(key, duration)
         data = self._post(data, soap_action, simple_remote=True)
 
+    def get_treble_test(self):  # XXX: doesn't seem to work.
+        soap_action = '"urn:UuVol-com:service:UuVolControl:5#GetToneCtrlBass"'
+        data = u"""<?xml version="1.0" encoding="UTF-8" ?>
+            <s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+                <s:Body>
+                    <u:GetToneCtrlBass xmlns:u="urn:UuVol-com:service:UuVolControl:5">
+                    </u:GetPresetList>
+                </s:Body>
+            </s:Envelope>"""
+        data = self._post(data, soap_action)
+        return data  # TODO: parse from XML.
+
+    def set_treble_test(self):  # XXX: doesn't seem to work.
+        soap_action = '"urn:UuVol-com:service:UuVolControl:5#SetToneCtrlBass"'
+        data = """<?xml version="1.0" encoding="UTF-8" ?>
+            <s:Envelope s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+            <s:Body>
+                <u:SetToneCtrlBass xmlns:u="urn:UuVol-com:service:UuVolControl:5">
+                    <NewToneCtrlBassValue>20</NewToneCtrlTrebleValue>
+                </u:SetToneCtrlBass>
+            </s:Body>
+            </s:Envelope>"""
+        data = self._post(data, soap_action)
+        print(data)
+
     def _post(self, data, soap_action, simple_remote=False):
         headers = {
             'User-Agent': 'CambridgeConnect/2.4.10 (Android) UPnP/1.0 DLNADOC/1.50 Platinum/1.0.4.11',
@@ -187,8 +213,10 @@ def _get_text(nodelist):
 
 def main():
     client = CXN()
-    print(client.get_presets())
-    client.press_key('VOL_UP')
+    print(client.get_treble_test())
+    print(client.set_treble_test())
+    #print(client.get_presets())
+    #client.press_key('VOL_UP')
     #client.get_playback_details()
     #client.choose_preset(1)
     #client.set_audio_source_by_number(0)
